@@ -1,29 +1,27 @@
-import { useBothTextContext } from '@/context/BothTextContext'
-import { useParseResultContext } from '@/context/ParseResultContext'
+import { useTextParseContext } from '@/context/TextParseContext'
 import { TextField } from '@mui/material'
 import { ChangeEvent } from 'react'
 
 const BothTextArea = () => {
-  const [bothText, dispatchBothText] = useBothTextContext()
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_parseResult, dispatchParseResult] = useParseResultContext()
+  const [textParse, dispatchTextParse] = useTextParseContext()
 
-  const handleInput = (event: ChangeEvent<HTMLInputElement>, key: keyof typeof bothText) => {
-    const value = event.target.value
-    dispatchBothText({ type: 'update', key, payload: value })
-    dispatchParseResult({ key, payload: value })
+  const handleInput = (event: ChangeEvent<HTMLInputElement>, key: keyof typeof textParse) => {
+    const payload = event.target.value
+    dispatchTextParse({ type: 'update', key, payload })
   }
 
   return (
-    <>
+    <div className="flex gap-2">
       <TextField
         label="OldData"
         required
         multiline
         rows={8}
-        value={bothText.old}
+        value={textParse.old.originText}
+        error={Boolean(textParse.old.message)}
+        helperText={textParse.old.message}
         variant="outlined"
-        className="w-1/2"
+        className="w-1/2 mt-2"
         onInput={(event: ChangeEvent<HTMLInputElement>) => handleInput(event, 'old')}
       />
 
@@ -32,12 +30,14 @@ const BothTextArea = () => {
         required
         multiline
         rows={8}
-        value={bothText.new}
+        value={textParse.new.originText}
+        error={Boolean(textParse.new.message)}
+        helperText={textParse.new.message}
         variant="outlined"
-        className="w-1/2"
+        className="w-1/2 mt-2"
         onInput={(event: ChangeEvent<HTMLInputElement>) => handleInput(event, 'new')}
       />
-    </>
+    </div>
   )
 }
 

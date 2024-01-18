@@ -3,18 +3,27 @@ import { Dispatch, ReactNode, createContext, useContext, useReducer } from 'reac
 
 type UniqueKey = string[]
 
-type UniqueKeyReducerAction = {
-  payload: string
-}
+type UniqueKeyReducerAction =
+  | {
+      type: 'update'
+      payload: string[]
+    }
+  | {
+      type: 'reset'
+    }
 
 const reducer = (state: UniqueKey, action: UniqueKeyReducerAction) => {
-  const { payload } = action
+  if (action.type === 'reset') return []
 
-  if (state.includes(payload)) {
-    return [...state.filter((key) => key !== payload)]
-  } else {
-    return [...state, payload]
-  }
+  return action.payload
+  // const { commonKeys, payload } = action
+  // const checkedKeys = state.filter((stateKey) => commonKeys.includes(stateKey))
+
+  // if (checkedKeys.includes(payload)) {
+  //   return [...checkedKeys.filter((key) => key !== payload)]
+  // } else {
+  //   return [...checkedKeys, payload]
+  // }
 }
 
 const initialState: UniqueKey = []

@@ -1,4 +1,4 @@
-import { useParseResultContext } from '@/context/ParseResultContext'
+import { useTextParseContext } from '@/context/TextParseContext'
 import { useUniqueKeyContext } from '@/context/UniqueKeyContext'
 import { diff, generateDiffText } from 'diff-unique-record'
 import SyntaxHighlighter from 'react-syntax-highlighter'
@@ -6,6 +6,11 @@ import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 import styled from 'styled-components'
 
 const diffParsedData = (oldData: object[], newData: object[], keys: string[]) => {
+  // keyがない場合は空データを返す
+  if (keys.length === 0) {
+    return { rowText: '', lineProps: () => ({}) }
+  }
+
   const results = diff({
     // TODO: keyof に調整できるか検証
     // npm の方でkeysのlength0の場合のエスケープ処理を入れる？
@@ -56,11 +61,11 @@ export const parseDiffText = (diffText: string) => {
 }
 
 const DiffResult = () => {
-  const [parseResult] = useParseResultContext()
+  const [textParse] = useTextParseContext()
   const [uniqueKey] = useUniqueKeyContext()
   const { rowText, lineProps } = diffParsedData(
-    parseResult.old.dataList,
-    parseResult.new.dataList,
+    textParse.old.dataList,
+    textParse.new.dataList,
     uniqueKey
   )
 
@@ -73,6 +78,11 @@ const DiffResult = () => {
         showLineNumbers
         lineNumberStyle={{ display: 'none' }}
         lineProps={lineProps}
+        customStyle={{
+          minHeight: '300px',
+          border: '1px solid rgba(0, 0, 0, 0.23)',
+          borderRadius: '4px',
+        }}
       >
         {rowText}
       </SyntaxHighlighter>

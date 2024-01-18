@@ -1,5 +1,5 @@
-import { useBothTextContext } from '@/context/BothTextContext'
-import { useParseResultContext } from '@/context/ParseResultContext'
+import { useTextParseContext } from '@/context/TextParseContext'
+import { useUniqueKeyContext } from '@/context/UniqueKeyContext'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import JSON5 from 'json5'
@@ -62,31 +62,28 @@ const newDataList = [
 
 const DispatchButton = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_bothText, dispatchBothText] = useBothTextContext()
+  const [_textParse, dispatchTextParse] = useTextParseContext()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_parseResult, dispatchParseResult] = useParseResultContext()
+  const [_uniqueKey, dispatchUniqueKey] = useUniqueKeyContext()
 
   const inputDefault = () => {
     const oldDataJson = JSON5.stringify(oldDataList, null, 2)
     const newDataJson = JSON5.stringify(newDataList, null, 2)
-    dispatchBothText({ type: 'update', key: 'old', payload: oldDataJson })
-    dispatchBothText({ type: 'update', key: 'new', payload: newDataJson })
-    dispatchParseResult({ key: 'old', payload: oldDataJson })
-    dispatchParseResult({ key: 'new', payload: newDataJson })
+    dispatchTextParse({ type: 'update', key: 'old', payload: oldDataJson })
+    dispatchTextParse({ type: 'update', key: 'new', payload: newDataJson })
   }
 
   const resetAll = () => {
-    dispatchBothText({ type: 'reset' })
-    dispatchParseResult({ key: 'old', payload: '' })
-    dispatchParseResult({ key: 'new', payload: '' })
+    dispatchTextParse({ type: 'reset' })
+    dispatchUniqueKey({ type: 'reset' })
   }
 
   return (
-    <Stack spacing={2} direction="row">
-      <Button onClick={inputDefault} variant="contained">
+    <Stack spacing={2} direction="row" alignItems="center">
+      <Button onClick={inputDefault} variant="contained" color="success" className="bg-[#2e7d32]">
         Default
       </Button>
-      <Button onClick={resetAll} variant="contained">
+      <Button onClick={resetAll} variant="outlined" color="error" className="bg-white">
         Reset
       </Button>
     </Stack>
