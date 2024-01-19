@@ -1,3 +1,4 @@
+import { useMultiSelectContext } from '@/context/MultiSelectContext'
 import {
   Checkbox,
   FormControl,
@@ -9,7 +10,7 @@ import {
   SelectChangeEvent,
 } from '@mui/material'
 import { DiffType } from 'diff-unique-record'
-import { useState } from 'react'
+// import { useState } from 'react'
 
 const getMenuProps = () => {
   const ITEM_HEIGHT = 48
@@ -29,7 +30,7 @@ const getDiffTypes = (): DiffType[] => {
 }
 
 const DiffTypeSelect = () => {
-  const [selectedTypes, setSelectedTypes] = useState<DiffType[]>(getDiffTypes())
+  const [multiSelect, dispatchMultiSelect] = useMultiSelectContext()
 
   return (
     <FormControl sx={{ width: 250 }} className="mt-2">
@@ -38,7 +39,7 @@ const DiffTypeSelect = () => {
         labelId="demo-multiple-checkbox-label"
         id="demo-multiple-checkbox"
         multiple
-        value={selectedTypes}
+        value={multiSelect.diff}
         input={<OutlinedInput label="Select Diff Type" />}
         renderValue={(selected) => selected.join(', ')}
         MenuProps={getMenuProps()}
@@ -49,12 +50,12 @@ const DiffTypeSelect = () => {
           // selectedValues は選択した順番のデータであるため、デフォルトのdiffTypesと並びが異なる場合がある
           // filter, includesで明示的にデフォルトの並びに変更している
           const payload = getDiffTypes().filter((diffType) => selects.includes(diffType))
-          setSelectedTypes(payload)
+          dispatchMultiSelect({ type: 'update', select: 'diff', payload })
         }}
       >
         {getDiffTypes().map((diffType) => (
           <MenuItem key={diffType} value={diffType}>
-            <Checkbox checked={selectedTypes.includes(diffType)} />
+            <Checkbox checked={multiSelect.diff.includes(diffType)} />
             <ListItemText primary={diffType} />
           </MenuItem>
         ))}

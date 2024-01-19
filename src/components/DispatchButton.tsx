@@ -1,5 +1,5 @@
+import { useMultiSelectContext } from '@/context/MultiSelectContext'
 import { useTextParseContext } from '@/context/TextParseContext'
-import { useUniqueKeyContext } from '@/context/UniqueKeyContext'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import JSON5 from 'json5'
@@ -62,9 +62,9 @@ const newDataList = [
 
 const DispatchButton = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_textParse, dispatchTextParse] = useTextParseContext()
+  const [_multiSelect, dispatchMultiSelect] = useMultiSelectContext()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_uniqueKey, dispatchUniqueKey] = useUniqueKeyContext()
+  const [_textParse, dispatchTextParse] = useTextParseContext()
 
   const inputDefault = () => {
     const oldDataJson = JSON5.stringify(oldDataList, null, 2)
@@ -75,7 +75,7 @@ const DispatchButton = () => {
 
   const resetAll = () => {
     dispatchTextParse({ type: 'reset' })
-    dispatchUniqueKey({ type: 'reset' })
+    dispatchMultiSelect({ type: 'reset' })
   }
 
   return (

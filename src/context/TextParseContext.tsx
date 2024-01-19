@@ -4,7 +4,7 @@ import { Dispatch, ReactNode, createContext, useContext, useReducer } from 'reac
 
 type Key = 'old' | 'new'
 
-type TextParseState = Record<
+export type TextParse = Record<
   Key,
   {
     originText: string
@@ -29,7 +29,7 @@ type TextParseAction =
  * @param action
  * @returns
  */
-const reducer = (state: TextParseState, action: TextParseAction) => {
+const reducer = (state: TextParse, action: TextParseAction) => {
   if (action.type === 'reset') return getInitialState()
   const { key, payload } = action
   const result = parseText(payload)
@@ -41,7 +41,7 @@ const reducer = (state: TextParseState, action: TextParseAction) => {
  * State 初期値を取得する
  * @returns
  */
-const getInitialState = (): TextParseState => ({
+const getInitialState = (): TextParse => ({
   old: {
     originText: getDefaultText(),
     dataList: [],
@@ -113,7 +113,7 @@ const isObjectData = (data: unknown): data is object => {
   return typeof data === 'object' && data !== null
 }
 
-const TextParseContext = createContext<[TextParseState, Dispatch<TextParseAction>] | undefined>(
+const TextParseContext = createContext<[TextParse, Dispatch<TextParseAction>] | undefined>(
   undefined
 )
 

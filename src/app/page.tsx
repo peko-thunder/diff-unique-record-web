@@ -4,15 +4,15 @@ import DiffResult from '@/components/DIffResult'
 import DiffTypeSelect from '@/components/DiffTypeSelect'
 import DispatchButton from '@/components/DispatchButton'
 import UniqueKeySelect from '@/components/UniqueKeySelect'
+import { MultiSelectProvider } from '@/context/MultiSelectContext'
 import { TextParseProvider } from '@/context/TextParseContext'
-import { UniqueKeyProvider } from '@/context/UniqueKeyContext'
 import { ReactNode } from 'react'
 
 const Provider = ({ children }: { children: ReactNode }) => {
   return (
-    <TextParseProvider>
-      <UniqueKeyProvider>{children}</UniqueKeyProvider>
-    </TextParseProvider>
+    <MultiSelectProvider>
+      <TextParseProvider>{children}</TextParseProvider>
+    </MultiSelectProvider>
   )
 }
 

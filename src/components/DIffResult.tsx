@@ -1,38 +1,51 @@
-import { useTextParseContext } from '@/context/TextParseContext'
-import { useUniqueKeyContext } from '@/context/UniqueKeyContext'
+import { MultiSelect, useMultiSelectContext } from '@/context/MultiSelectContext'
+import { TextParse, useTextParseContext } from '@/context/TextParseContext'
 import { diff, generateDiffText } from 'diff-unique-record'
 import SyntaxHighlighter from 'react-syntax-highlighter'
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 import styled from 'styled-components'
 
-const diffParsedData = (oldData: object[], newData: object[], keys: string[]) => {
-  // keyがない場合は空データを返す
-  if (keys.length === 0) {
-    return { rowText: '', lineProps: () => ({}) }
-  }
+/**
+ * 空オプション
+ */
+const EMPTY_OPTION = { rowText: '', lineProps: () => ({}) }
 
-  const results = diff({
-    // TODO: keyof に調整できるか検証
-    // npm の方でkeysのlength0の場合のエスケープ処理を入れる？
-    // keysを選択してなければresultを表示したくない
-    old: oldData,
-    new: newData,
-    keys: keys as never[],
-  })
-  const diffText = generateDiffText(results)
-  const { addedRowNums, removedRowNums, rowText } = parseDiffText(diffText)
-  const lineProps = (lineNumber: number) => {
-    // なぜかclassNameを設定しても反映されないため、data属性を付与してスタイル反映
-    // classNameなどの正規のプロパティをreturnに含む必要があるためundefinedで設定
-    let lineType = 'unchanged'
-    if (addedRowNums.includes(lineNumber)) lineType = 'added'
-    if (removedRowNums.includes(lineNumber)) lineType = 'removed'
+/**
+ * 差分結果を生成する
+ * @param textParse
+ * @param multiSelect
+ * @returns
+ */
+export const generateDiffResult = (textParse: TextParse, multiSelect: MultiSelect) => {
+  if (multiSelect.unique.length === 0) return EMPTY_OPTION
+  const diffResults = diffDataList(textParse, multiSelect)
+  const diffText = generateDiffText(diffResults)
+  const parsedDiffInfo = parseDiffText(diffText)
+  const lineProps = generateLineProps(parsedDiffInfo)
 
-    return { className: undefined, 'data-line-type': lineType }
-  }
-
-  return { rowText, lineProps }
+  return { rowText: parsedDiffInfo.rowText, lineProps }
 }
+
+/**
+ * 新旧のデータをSelectデータで比較/フィルタする
+ * @param textParse
+ * @param multiSelect
+ * @returns
+ */
+const diffDataList = (textParse: TextParse, multiSelect: MultiSelect) => {
+  const diffResults = diff({
+    old: textParse.old.dataList,
+    new: textParse.new.dataList,
+    keys: multiSelect.unique as never[],
+  }).filter((result) => multiSelect.diff.includes(result.type))
+
+  return diffResults
+}
+
+/**
+ * 差分テキストを解析した結果
+ */
+type ParsedDiffInfo = { rowText: string } & DiffRowNums
 
 /**
  * 差分テキストを解析する。
@@ -41,7 +54,7 @@ const diffParsedData = (oldData: object[], newData: object[], keys: string[]) =>
  * @param diffText
  * @returns
  */
-export const parseDiffText = (diffText: string) => {
+const parseDiffText = (diffText: string): ParsedDiffInfo => {
   const addedRowNums: number[] = []
   const removedRowNums: number[] = []
   const rows = diffText.split(/\n/)
@@ -60,14 +73,35 @@ export const parseDiffText = (diffText: string) => {
   }
 }
 
+/**
+ * Diff 結果(+, -)の行ナンバーをまとめたデータ構造
+ */
+type DiffRowNums = Record<'addedRowNums' | 'removedRowNums', number[]>
+
+/**
+ * SyntaxHighlighter で使用するオプションを作成する
+ * LineごとにCSSのStyleを当てる処理を作成
+ * @param diffRowNums
+ * @returns
+ */
+const generateLineProps = ({ addedRowNums, removedRowNums }: DiffRowNums) => {
+  const lineProps = (lineNumber: number) => {
+    // なぜかclassNameを設定しても反映されないため、data属性を付与してスタイル反映
+    // classNameなどの正規のプロパティをreturnに含む必要があるためundefinedで設定
+    let lineType = 'unchanged'
+    if (addedRowNums.includes(lineNumber)) lineType = 'added'
+    if (removedRowNums.includes(lineNumber)) lineType = 'removed'
+
+    return { className: undefined, 'data-line-type': lineType }
+  }
+
+  return lineProps
+}
+
 const DiffResult = () => {
+  const [multiSelect] = useMultiSelectContext()
   const [textParse] = useTextParseContext()
-  const [uniqueKey] = useUniqueKeyContext()
-  const { rowText, lineProps } = diffParsedData(
-    textParse.old.dataList,
-    textParse.new.dataList,
-    uniqueKey
-  )
+  const { rowText, lineProps } = generateDiffResult(textParse, multiSelect)
 
   return (
     <LineStyleWrapper>

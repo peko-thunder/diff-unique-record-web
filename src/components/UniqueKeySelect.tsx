@@ -1,5 +1,5 @@
+import { useMultiSelectContext } from '@/context/MultiSelectContext'
 import { useTextParseContext } from '@/context/TextParseContext'
-import { useUniqueKeyContext } from '@/context/UniqueKeyContext'
 import {
   Checkbox,
   FormControl,
@@ -38,8 +38,8 @@ const generateCommonKeys = (oldData: object[], newData: object[]) => {
 }
 
 const UniqueKeySelect = () => {
+  const [multiSelect, dispatchMultiSelect] = useMultiSelectContext()
   const [textParse] = useTextParseContext()
-  const [uniqueKey, dispatchUniqueKey] = useUniqueKeyContext()
   const [commonKeys, setCommonKeys] = useState<string[]>([])
 
   useEffect(() => {
@@ -48,8 +48,8 @@ const UniqueKeySelect = () => {
   }, [textParse])
 
   useEffect(() => {
-    const payload = uniqueKey.filter((key) => commonKeys.includes(key))
-    dispatchUniqueKey({ type: 'update', payload })
+    const payload = multiSelect.unique.filter((key) => commonKeys.includes(key))
+    dispatchMultiSelect({ type: 'update', select: 'unique', payload })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [commonKeys])
 
@@ -60,22 +60,22 @@ const UniqueKeySelect = () => {
         labelId="demo-multiple-checkbox-label"
         id="demo-multiple-checkbox"
         multiple
-        value={uniqueKey}
+        value={multiSelect.unique}
         input={<OutlinedInput label="Select Unique Key" />}
         renderValue={(selected) => selected.join(', ')}
         MenuProps={getMenuProps()}
         disabled={commonKeys.length === 0}
-        error={uniqueKey.length === 0}
+        error={multiSelect.unique.length === 0}
         onChange={(event: SelectChangeEvent<string[]>) => {
           const value = event.target.value
           // On autofill we get a stringified value.
           const payload = typeof value === 'string' ? value.split(',') : value
-          dispatchUniqueKey({ type: 'update', payload })
+          dispatchMultiSelect({ type: 'update', select: 'unique', payload })
         }}
       >
         {commonKeys.map((key) => (
           <MenuItem key={key} value={key}>
-            <Checkbox checked={uniqueKey.includes(key)} />
+            <Checkbox checked={multiSelect.unique.includes(key)} />
             <ListItemText primary={key} />
           </MenuItem>
         ))}
