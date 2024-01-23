@@ -66,11 +66,12 @@ const DispatchButton = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_textParse, dispatchTextParse] = useTextParseContext()
 
-  const inputDefault = () => {
+  const inputSample = () => {
     const oldDataJson = JSON5.stringify(oldDataList, null, 2)
     const newDataJson = JSON5.stringify(newDataList, null, 2)
     dispatchTextParse({ type: 'update', key: 'old', payload: oldDataJson })
     dispatchTextParse({ type: 'update', key: 'new', payload: newDataJson })
+    dispatchMultiSelect({ type: 'update', select: 'unique', payload: ['date', 'name'] })
   }
 
   const resetAll = () => {
@@ -80,8 +81,8 @@ const DispatchButton = () => {
 
   return (
     <Stack spacing={2} direction="row" alignItems="center">
-      <Button onClick={inputDefault} variant="contained" color="success" className="bg-[#2e7d32]">
-        Default
+      <Button onClick={inputSample} variant="contained" color="success" className="bg-[#2e7d32]">
+        Sample
       </Button>
       <Button onClick={resetAll} variant="outlined" color="error" className="bg-white">
         Reset
