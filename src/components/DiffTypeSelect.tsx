@@ -1,4 +1,4 @@
-import { useMultiSelectContext } from '@/context/MultiSelectContext'
+import { DefaultDiffTypes, DiffTypeSelectAtom } from '@/atoms/DiffTypeSelectAtom'
 import {
   Checkbox,
   FormControl,
@@ -10,7 +10,7 @@ import {
   SelectChangeEvent,
 } from '@mui/material'
 import { DiffType } from 'diff-unique-record'
-// import { useState } from 'react'
+import { useAtomValue, useSetAtom } from 'jotai'
 
 const getMenuProps = () => {
   const ITEM_HEIGHT = 48
@@ -25,12 +25,9 @@ const getMenuProps = () => {
   }
 }
 
-const getDiffTypes = (): DiffType[] => {
-  return ['added', 'removed', 'updated', 'unchanged']
-}
-
 const DiffTypeSelect = () => {
-  const [multiSelect, dispatchMultiSelect] = useMultiSelectContext()
+  const diffTypes = useAtomValue(DiffTypeSelectAtom.select)
+  const updateDiffTypes = useSetAtom(DiffTypeSelectAtom.update)
 
   return (
     <FormControl sx={{ width: 250 }} className="mt-2">
@@ -39,23 +36,20 @@ const DiffTypeSelect = () => {
         labelId="demo-multiple-checkbox-label"
         id="demo-multiple-checkbox"
         multiple
-        value={multiSelect.diff}
+        value={diffTypes}
         input={<OutlinedInput label="Select Diff Type" />}
         renderValue={(selected) => selected.join(', ')}
         MenuProps={getMenuProps()}
         onChange={(event: SelectChangeEvent<DiffType[]>) => {
           const value = event.target.value
           // On autofill we get a stringified value.
-          const selects = typeof value === 'string' ? (value.split(',') as DiffType[]) : value
-          // selectedValues は選択した順番のデータであるため、デフォルトのdiffTypesと並びが異なる場合がある
-          // filter, includesで明示的にデフォルトの並びに変更している
-          const payload = getDiffTypes().filter((diffType) => selects.includes(diffType))
-          dispatchMultiSelect({ type: 'update', select: 'diff', payload })
+          const diffTYpes = typeof value === 'string' ? (value.split(',') as DiffType[]) : value
+          updateDiffTypes(diffTYpes)
         }}
       >
-        {getDiffTypes().map((diffType) => (
+        {DefaultDiffTypes().map((diffType) => (
           <MenuItem key={diffType} value={diffType}>
-            <Checkbox checked={multiSelect.diff.includes(diffType)} />
+            <Checkbox checked={diffTypes.includes(diffType)} />
             <ListItemText primary={diffType} />
           </MenuItem>
         ))}

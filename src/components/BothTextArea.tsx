@@ -1,13 +1,15 @@
-import { useTextParseContext } from '@/context/TextParseContext'
+import { ParsedType, TextParseAtom } from '@/atoms/TextParseAtom'
 import { TextField } from '@mui/material'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { ChangeEvent } from 'react'
 
 const BothTextArea = () => {
-  const [textParse, dispatchTextParse] = useTextParseContext()
+  const diffRecord = useAtomValue(TextParseAtom.record)
+  const updateText = useSetAtom(TextParseAtom.update)
 
-  const handleInput = (event: ChangeEvent<HTMLInputElement>, key: keyof typeof textParse) => {
+  const handleInput = (event: ChangeEvent<HTMLInputElement>, type: ParsedType) => {
     const payload = event.target.value
-    dispatchTextParse({ type: 'update', key, payload })
+    updateText(type, payload)
   }
 
   return (
@@ -17,12 +19,12 @@ const BothTextArea = () => {
         required
         multiline
         rows={8}
-        value={textParse.old.originText}
-        error={Boolean(textParse.old.message)}
-        helperText={textParse.old.message}
+        value={diffRecord.oldData.origin}
+        error={Boolean(diffRecord.oldData.message)}
+        helperText={diffRecord.oldData.message}
         variant="outlined"
         className="w-1/2 mt-2"
-        onInput={(event: ChangeEvent<HTMLInputElement>) => handleInput(event, 'old')}
+        onInput={(event: ChangeEvent<HTMLInputElement>) => handleInput(event, 'oldData')}
       />
 
       <TextField
@@ -30,12 +32,12 @@ const BothTextArea = () => {
         required
         multiline
         rows={8}
-        value={textParse.new.originText}
-        error={Boolean(textParse.new.message)}
-        helperText={textParse.new.message}
+        value={diffRecord.newData.origin}
+        error={Boolean(diffRecord.newData.message)}
+        helperText={diffRecord.newData.message}
         variant="outlined"
         className="w-1/2 mt-2"
-        onInput={(event: ChangeEvent<HTMLInputElement>) => handleInput(event, 'new')}
+        onInput={(event: ChangeEvent<HTMLInputElement>) => handleInput(event, 'newData')}
       />
     </div>
   )

@@ -1,6 +1,8 @@
-import { MultiSelect, useMultiSelectContext } from '@/context/MultiSelectContext'
-import { TextParse, useTextParseContext } from '@/context/TextParseContext'
-import { diff, generateDiffText } from 'diff-unique-record'
+import { DiffTypeSelectAtom } from '@/atoms/DiffTypeSelectAtom'
+import { RecordKeyAtom } from '@/atoms/RecordKeyAtom'
+import { DiffRecord, TextParseAtom } from '@/atoms/TextParseAtom'
+import { DiffType, diff, generateDiffText } from 'diff-unique-record'
+import { useAtomValue } from 'jotai'
 import SyntaxHighlighter from 'react-syntax-highlighter'
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 import styled from 'styled-components'
@@ -11,14 +13,22 @@ import styled from 'styled-components'
 const EMPTY_OPTION = { rowText: '', lineProps: () => ({}) }
 
 /**
+ * DiffResult 生成パラメーター
+ */
+type ResultParam = {
+  diffRecord: DiffRecord
+  uniqueKeys: string[]
+  diffTypes: DiffType[]
+}
+
+/**
  * 差分結果を生成する
- * @param textParse
- * @param multiSelect
+ * @param param
  * @returns
  */
-export const generateDiffResult = (textParse: TextParse, multiSelect: MultiSelect) => {
-  if (multiSelect.unique.length === 0) return EMPTY_OPTION
-  const diffResults = diffDataList(textParse, multiSelect)
+export const generateDiffResult = (param: ResultParam) => {
+  if (param.uniqueKeys.length === 0) return EMPTY_OPTION
+  const diffResults = diffDataList(param)
   const diffText = generateDiffText(diffResults)
   const parsedDiffInfo = parseDiffText(diffText)
   const lineProps = generateLineProps(parsedDiffInfo)
@@ -28,16 +38,15 @@ export const generateDiffResult = (textParse: TextParse, multiSelect: MultiSelec
 
 /**
  * 新旧のデータをSelectデータで比較/フィルタする
- * @param textParse
- * @param multiSelect
+ * @param param
  * @returns
  */
-const diffDataList = (textParse: TextParse, multiSelect: MultiSelect) => {
+const diffDataList = ({ diffRecord, uniqueKeys, diffTypes }: ResultParam) => {
   const diffResults = diff({
-    old: textParse.old.dataList,
-    new: textParse.new.dataList,
-    keys: multiSelect.unique as never[],
-  }).filter((result) => multiSelect.diff.includes(result.type))
+    old: diffRecord.oldData.list,
+    new: diffRecord.newData.list,
+    keys: uniqueKeys as never[],
+  }).filter((result) => diffTypes.includes(result.type))
 
   return diffResults
 }
@@ -99,9 +108,11 @@ const generateLineProps = ({ addedRowNums, removedRowNums }: DiffRowNums) => {
 }
 
 const DiffResult = () => {
-  const [multiSelect] = useMultiSelectContext()
-  const [textParse] = useTextParseContext()
-  const { rowText, lineProps } = generateDiffResult(textParse, multiSelect)
+  const diffRecord = useAtomValue(TextParseAtom.record)
+  const uniqueKeys = useAtomValue(RecordKeyAtom.uniqueKeys)
+  const diffTypes = useAtomValue(DiffTypeSelectAtom.select)
+
+  const { rowText, lineProps } = generateDiffResult({ diffRecord, uniqueKeys, diffTypes })
 
   return (
     <LineStyleWrapper>

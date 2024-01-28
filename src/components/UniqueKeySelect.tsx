@@ -1,5 +1,4 @@
-import { useMultiSelectContext } from '@/context/MultiSelectContext'
-import { useTextParseContext } from '@/context/TextParseContext'
+import { RecordKeyAtom } from '@/atoms/RecordKeyAtom'
 import {
   Checkbox,
   FormControl,
@@ -10,7 +9,7 @@ import {
   Select,
   SelectChangeEvent,
 } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useAtomValue, useSetAtom } from 'jotai'
 
 const getMenuProps = () => {
   const ITEM_HEIGHT = 48
@@ -25,33 +24,10 @@ const getMenuProps = () => {
   }
 }
 
-const generateCommonKeys = (oldData: object[], newData: object[]) => {
-  const oldKeys = Array.from(new Set(oldData.flatMap((data) => Object.keys(data))))
-  const newKeys = Array.from(new Set(newData.flatMap((data) => Object.keys(data))))
-  const allKeys = Array.from(new Set([...oldKeys, ...newKeys]))
-  const commonKeys = allKeys.reduce((array: string[], key) => {
-    if (oldKeys.includes(key) && newKeys.includes(key)) array.push(key)
-    return array
-  }, [])
-
-  return commonKeys
-}
-
 const UniqueKeySelect = () => {
-  const [multiSelect, dispatchMultiSelect] = useMultiSelectContext()
-  const [textParse] = useTextParseContext()
-  const [commonKeys, setCommonKeys] = useState<string[]>([])
-
-  useEffect(() => {
-    const commonKeys = generateCommonKeys(textParse.old.dataList, textParse.new.dataList)
-    setCommonKeys(commonKeys)
-  }, [textParse])
-
-  useEffect(() => {
-    const payload = multiSelect.unique.filter((key) => commonKeys.includes(key))
-    dispatchMultiSelect({ type: 'update', select: 'unique', payload })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [commonKeys])
+  const commonKeys = useAtomValue(RecordKeyAtom.commonKeys)
+  const uniqueKeys = useAtomValue(RecordKeyAtom.uniqueKeys)
+  const updateUniqueKeys = useSetAtom(RecordKeyAtom.update)
 
   return (
     <FormControl sx={{ width: 250 }} className="mt-2">
@@ -60,22 +36,22 @@ const UniqueKeySelect = () => {
         labelId="demo-multiple-checkbox-label"
         id="demo-multiple-checkbox"
         multiple
-        value={multiSelect.unique}
+        value={uniqueKeys}
         input={<OutlinedInput label="Select Unique Key" />}
         renderValue={(selected) => selected.join(', ')}
         MenuProps={getMenuProps()}
         disabled={commonKeys.length === 0}
-        error={multiSelect.unique.length === 0}
+        error={uniqueKeys.length === 0}
         onChange={(event: SelectChangeEvent<string[]>) => {
           const value = event.target.value
           // On autofill we get a stringified value.
           const payload = typeof value === 'string' ? value.split(',') : value
-          dispatchMultiSelect({ type: 'update', select: 'unique', payload })
+          updateUniqueKeys(payload)
         }}
       >
         {commonKeys.map((key) => (
           <MenuItem key={key} value={key}>
-            <Checkbox checked={multiSelect.unique.includes(key)} />
+            <Checkbox checked={uniqueKeys.includes(key)} />
             <ListItemText primary={key} />
           </MenuItem>
         ))}

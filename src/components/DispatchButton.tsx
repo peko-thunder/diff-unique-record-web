@@ -1,7 +1,8 @@
-import { useMultiSelectContext } from '@/context/MultiSelectContext'
-import { useTextParseContext } from '@/context/TextParseContext'
+import { RecordKeyAtom } from '@/atoms/RecordKeyAtom'
+import { TextParseAtom } from '@/atoms/TextParseAtom'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
+import { useSetAtom } from 'jotai'
 import JSON5 from 'json5'
 
 const oldDataList = [
@@ -61,22 +62,22 @@ const newDataList = [
 ]
 
 const DispatchButton = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_multiSelect, dispatchMultiSelect] = useMultiSelectContext()
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_textParse, dispatchTextParse] = useTextParseContext()
+  const updateTextParse = useSetAtom(TextParseAtom.update)
+  const resetTextParse = useSetAtom(TextParseAtom.reset)
+  const updateUniqueKeys = useSetAtom(RecordKeyAtom.update)
+  const resetUniqueKeys = useSetAtom(RecordKeyAtom.reset)
 
   const inputSample = () => {
     const oldDataJson = JSON5.stringify(oldDataList, null, 2)
     const newDataJson = JSON5.stringify(newDataList, null, 2)
-    dispatchTextParse({ type: 'update', key: 'old', payload: oldDataJson })
-    dispatchTextParse({ type: 'update', key: 'new', payload: newDataJson })
-    dispatchMultiSelect({ type: 'update', select: 'unique', payload: ['date', 'name'] })
+    updateTextParse('oldData', oldDataJson)
+    updateTextParse('newData', newDataJson)
+    updateUniqueKeys(['date', 'name'])
   }
 
   const resetAll = () => {
-    dispatchTextParse({ type: 'reset' })
-    dispatchMultiSelect({ type: 'reset' })
+    resetTextParse()
+    resetUniqueKeys()
   }
 
   return (
