@@ -13,7 +13,7 @@ const BothTextArea = () => {
   }
 
   return (
-    <div className="flex gap-2">
+    <div className="grid grid-cols-2 gap-2">
       <TextField
         label="OldData"
         required
@@ -23,7 +23,7 @@ const BothTextArea = () => {
         error={Boolean(diffRecord.oldData.message)}
         helperText={diffRecord.oldData.message}
         variant="outlined"
-        className="w-1/2 mt-2"
+        className="mt-2"
         onInput={(event: ChangeEvent<HTMLInputElement>) => handleInput(event, 'oldData')}
       />
 
@@ -36,7 +36,7 @@ const BothTextArea = () => {
         error={Boolean(diffRecord.newData.message)}
         helperText={diffRecord.newData.message}
         variant="outlined"
-        className="w-1/2 mt-2"
+        className="mt-2"
         onInput={(event: ChangeEvent<HTMLInputElement>) => handleInput(event, 'newData')}
       />
     </div>

@@ -1,26 +1,24 @@
 'use client'
 import BothTextArea from '@/components/BothTextArea'
-import DiffResult from '@/components/DIffResult'
+import DiffResult from '@/components/DiffResult'
 import DiffTypeSelect from '@/components/DiffTypeSelect'
 import DispatchButton from '@/components/DispatchButton'
 import UniqueKeySelect from '@/components/UniqueKeySelect'
 
-const Home = () => {
+const Page = () => {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="flex flex-col gap-2 max-w-5xl w-full ">
-        <div className="flex justify-between">
-          <div className="flex gap-2">
-            <UniqueKeySelect />
-            <DiffTypeSelect />
-          </div>
-          <DispatchButton />
+    <div className="flex flex-col gap-2 w-full p-8 bg-white shadow-md">
+      <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2">
+          <UniqueKeySelect />
+          <DiffTypeSelect />
         </div>
-        <BothTextArea />
-        <DiffResult />
+        <DispatchButton />
       </div>
-    </main>
+      <BothTextArea />
+      <DiffResult />
+    </div>
   )
 }
 
-export default Home
+export default Page

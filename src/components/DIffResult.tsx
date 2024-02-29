@@ -115,7 +115,7 @@ const DiffResult = () => {
   const { rowText, lineProps } = generateDiffResult({ diffRecord, uniqueKeys, diffTypes })
 
   return (
-    <LineStyleWrapper>
+    <StyleWrapper>
       <SyntaxHighlighter
         language="typescript"
         style={docco}
@@ -124,6 +124,7 @@ const DiffResult = () => {
         lineNumberStyle={{ display: 'none' }}
         lineProps={lineProps}
         customStyle={{
+          height: '100%',
           minHeight: '300px',
           border: '1px solid rgba(0, 0, 0, 0.23)',
           borderRadius: '4px',
@@ -131,14 +132,15 @@ const DiffResult = () => {
       >
         {rowText}
       </SyntaxHighlighter>
-    </LineStyleWrapper>
+    </StyleWrapper>
   )
 }
 
 /**
  * SyntaxHighlighter の特定行に対してスタイルを適応するにあたって、個別のスタイルを属性で設定
  */
-const LineStyleWrapper = styled.div`
+const StyleWrapper = styled.div`
+  height: 100%;
   [data-line-type='added'] {
     position: relative;
     display: block;

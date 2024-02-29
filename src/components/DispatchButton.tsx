@@ -1,7 +1,6 @@
 import { RecordKeyAtom } from '@/atoms/RecordKeyAtom'
 import { TextParseAtom } from '@/atoms/TextParseAtom'
 import Button from '@mui/material/Button'
-import Stack from '@mui/material/Stack'
 import { useSetAtom } from 'jotai'
 import JSON5 from 'json5'
 
@@ -81,14 +80,14 @@ const DispatchButton = () => {
   }
 
   return (
-    <Stack spacing={2} direction="row" alignItems="center">
+    <div className="flex items-center justify-end gap-2">
       <Button onClick={inputSample} variant="contained" color="success" className="bg-[#2e7d32]">
         Sample
       </Button>
       <Button onClick={resetAll} variant="outlined" color="error" className="bg-white">
         Reset
       </Button>
-    </Stack>
+    </div>
   )
 }
 

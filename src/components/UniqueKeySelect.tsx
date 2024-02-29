@@ -11,26 +11,13 @@ import {
 } from '@mui/material'
 import { useAtomValue, useSetAtom } from 'jotai'
 
-const getMenuProps = () => {
-  const ITEM_HEIGHT = 48
-  const ITEM_PADDING_TOP = 8
-  return {
-    PaperProps: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 5.5 + ITEM_PADDING_TOP,
-        width: 250,
-      },
-    },
-  }
-}
-
 const UniqueKeySelect = () => {
   const commonKeys = useAtomValue(RecordKeyAtom.commonKeys)
   const uniqueKeys = useAtomValue(RecordKeyAtom.uniqueKeys)
   const updateUniqueKeys = useSetAtom(RecordKeyAtom.update)
 
   return (
-    <FormControl sx={{ width: 250 }} className="mt-2">
+    <FormControl className="mt-2">
       <InputLabel id="demo-multiple-checkbox-label">Select Unique Key</InputLabel>
       <Select
         labelId="demo-multiple-checkbox-label"
@@ -39,7 +26,6 @@ const UniqueKeySelect = () => {
         value={uniqueKeys}
         input={<OutlinedInput label="Select Unique Key" />}
         renderValue={(selected) => selected.join(', ')}
-        MenuProps={getMenuProps()}
         disabled={commonKeys.length === 0}
         error={uniqueKeys.length === 0}
         onChange={(event: SelectChangeEvent<string[]>) => {
