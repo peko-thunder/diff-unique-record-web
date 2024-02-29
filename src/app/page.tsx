@@ -1,9 +1,9 @@
 'use client'
 import BothTextArea from '@/components/BothTextArea'
-import DiffResult from '@/components/DiffResult'
 import DiffTypeSelect from '@/components/DiffTypeSelect'
 import DispatchButton from '@/components/DispatchButton'
 import UniqueKeySelect from '@/components/UniqueKeySelect'
+import DiffResult from '@/components/_DiffResult'
 
 const Page = () => {
   return (
