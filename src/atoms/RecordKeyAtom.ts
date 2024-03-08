@@ -1,4 +1,3 @@
-'use client'
 import { atom } from 'jotai'
 import { TextParseAtom } from './TextParseAtom'
 

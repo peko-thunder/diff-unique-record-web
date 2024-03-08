@@ -60,11 +60,9 @@ const newDataList = [
   },
 ]
 
-const DispatchButton = () => {
+const SampleButton = () => {
   const updateTextParse = useSetAtom(TextParseAtom.update)
-  const resetTextParse = useSetAtom(TextParseAtom.reset)
   const updateUniqueKeys = useSetAtom(RecordKeyAtom.update)
-  const resetUniqueKeys = useSetAtom(RecordKeyAtom.reset)
 
   const inputSample = () => {
     const oldDataJson = JSON5.stringify(oldDataList, null, 2)
@@ -74,21 +72,11 @@ const DispatchButton = () => {
     updateUniqueKeys(['date', 'name'])
   }
 
-  const resetAll = () => {
-    resetTextParse()
-    resetUniqueKeys()
-  }
-
   return (
-    <div className="flex items-center justify-end gap-2">
-      <Button onClick={inputSample} variant="contained" color="success" className="bg-[#2e7d32]">
-        Sample
-      </Button>
-      <Button onClick={resetAll} variant="outlined" color="error" className="bg-white">
-        Reset
-      </Button>
-    </div>
+    <Button onClick={inputSample} variant="contained" color="success" className="bg-[#2e7d32]">
+      Sample
+    </Button>
   )
 }
 
-export default DispatchButton
+export default SampleButton

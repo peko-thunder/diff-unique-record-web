@@ -126,6 +126,7 @@ const DiffResult = () => {
         customStyle={{
           height: '100%',
           minHeight: '300px',
+          maxHeight: '60lvh',
           border: '1px solid rgba(0, 0, 0, 0.23)',
           borderRadius: '4px',
         }}

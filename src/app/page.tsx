@@ -2,7 +2,9 @@
 import BothTextArea from '@/components/BothTextArea'
 import DiffResult from '@/components/DiffResult'
 import DiffTypeSelect from '@/components/DiffTypeSelect'
-import DispatchButton from '@/components/DispatchButton'
+import ParseFileButton from '@/components/ParseFileButton'
+import ResetButton from '@/components/ResetButton'
+import SampleButton from '@/components/SampleButton'
 import UniqueKeySelect from '@/components/UniqueKeySelect'
 
 const Page = () => {
@@ -13,7 +15,11 @@ const Page = () => {
           <UniqueKeySelect />
           <DiffTypeSelect />
         </div>
-        <DispatchButton />
+        <div className="flex items-center justify-end gap-2">
+          <ParseFileButton />
+          <SampleButton />
+          <ResetButton />
+        </div>
       </div>
       <BothTextArea />
       <DiffResult />

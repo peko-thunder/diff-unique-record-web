@@ -1,4 +1,3 @@
-'use client'
 import { isObjectArray } from '@/types'
 import { atom } from 'jotai'
 import JSON5 from 'json5'

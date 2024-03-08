@@ -15,8 +15,7 @@ const BothTextArea = () => {
   return (
     <div className="grid grid-cols-2 gap-2">
       <TextField
-        label="OldData"
-        required
+        label="Input Old Data"
         multiline
         rows={8}
         value={diffRecord.oldData.origin}
@@ -28,8 +27,7 @@ const BothTextArea = () => {
       />
 
       <TextField
-        label="NewData"
-        required
+        label="Input New Data"
         multiline
         rows={8}
         value={diffRecord.newData.origin}
