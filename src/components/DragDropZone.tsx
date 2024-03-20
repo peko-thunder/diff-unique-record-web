@@ -1,4 +1,5 @@
 import { ParsedType, TextParseAtom } from '@/atoms/TextParseAtom'
+import FileUploadIcon from '@mui/icons-material/FileUpload'
 import { useSetAtom } from 'jotai'
 import JSON5 from 'json5'
 import Papa from 'papaparse'
@@ -9,7 +10,7 @@ import { useDropzone } from 'react-dropzone'
  * ドラッグ＆ドロップでファイルをセットするコンポーネント
  * @example https://goodpatch-tech.hatenablog.com/entry/react-file-dragdorp
  */
-const DragDropZone = ({ type }: { type: ParsedType }) => {
+const DragDropZone = ({ type, label }: { type: ParsedType; label: string }) => {
   const updateTextParse = useSetAtom(TextParseAtom.update)
 
   const onDropAccepted = (files: File[]) => {
@@ -55,6 +56,7 @@ const DragDropZone = ({ type }: { type: ParsedType }) => {
       backgroundColor: '#fafafa',
       color: '#888888',
       outline: 'none',
+      cursor: 'pointer',
     }),
     []
   )
@@ -92,10 +94,8 @@ const DragDropZone = ({ type }: { type: ParsedType }) => {
     <div className="dragdrop-hitarea-wrap">
       <div {...getRootProps({ style })}>
         <input {...getInputProps()} />
-        <span className="icon-upload">⇪</span>
-        <p>
-          Drag & Drop / <br /> Select file from dialog
-        </p>
+        <FileUploadIcon />
+        <p>{label}</p>
       </div>
     </div>
   )

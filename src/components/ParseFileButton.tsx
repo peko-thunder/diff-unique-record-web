@@ -27,8 +27,8 @@ const ParseFileButton = () => {
           CSV File can be selected by drag & drop or in a selection dialog.
         </Typography>
         <div className="grid grid-cols-2 gap-2">
-          <DragDropZone type="oldData" />
-          <DragDropZone type="newData" />
+          <DragDropZone type="oldData" label="Select Old Data" />
+          <DragDropZone type="newData" label="Select New Data" />
         </div>
       </CenterModal>
     </>
