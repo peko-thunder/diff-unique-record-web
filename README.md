@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
 ## Getting Started
 
-First, run the development server:
+### Environment
+
+- Node: 20.10.0
+
+### Install
+
+```bash
+npm install
+```
+
+### Start
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Access to http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Sample Site: https://diff-unique-record-web.vercel.app
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## What is this
 
-## Learn More
+Unique Recordとは、キーの組み合わせによるユニークなデータです。  
+このユニークなデータ配列を新旧で比較したい場面が多々あります。  
+例えば、コード変更前後の出力データが同じか確認したい時です。  
+テストコードに書かれたデータより、生のデータを使って検証したい時に使っています。  
+他には、出力したCSVファイルの更新箇所を確認したい時にも有効です。
 
-To learn more about Next.js, take a look at the following resources:
+Unique record is unique data by combination key.  
+There are many situations where I want to compare old and new versions of this unique data array.  
+For example, when I want to check if the output data is the same before and after by code change.  
+I use this when I want to verify using raw data rather than data written in test code.  
+Other times, it is useful to check the updated part of the output CSV file.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## How to use
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### 1. Input Data
 
-## Deploy on Vercel
+新旧のテキストエリアにオブジェクト配列を文字列で入力してください。  
+"SAMPLE"ボタンをクリックするとサンプルデータが設定されます。
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Input the object array as a string in the old and new text areas.  
+Click the "SAMPLE" button to set the sample data.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## 2. Select Unique Key
+
+ユニークキーの組み合わせを選択してください。  
+新旧のデータで共通するキーをセレクトボックスで選択できます。
+
+Please select combination of unique keys.  
+You can select keys that are common to both old and new data in the select box.
+
+## 3. Select Diff Type
+
+表示したい差分タイプを選択してください。  
+データが多い場合のフィルタリングに使ってください。
+
+Select the difference type you wish to view.  
+Use this to filter when you have a lot of data.
+
+- added: 新規に追加されたデータ
+- removed: 旧データにしかなく、削除されたデータ
+- updated: 新旧で存在するが、更新されたデータ
+- unchanged: 新旧で存在し、更新されていないデータ
+
+## Useful Features
+
+### Parse File
+
+"PARSE FILE"ボタンをクリックするとモーダルが開くので、比較したいCSVファイルを選んでください。  
+ファイルをストレージに保存したり外部に送信する機能はありません
+
+Click the "PARSE FILE" button to open a modal and select the CSV file you wish to compare.  
+No ability to save files to storage or send them externally.
