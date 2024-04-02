@@ -97,10 +97,12 @@ You can select keys that are common to both old and new data in the select box.
 Select the difference type you wish to view.  
 Use this to filter when you have a lot of data.
 
-- added: 新規に追加されたデータ
-- removed: 旧データにしかなく、削除されたデータ
-- updated: 新旧で存在するが、更新されたデータ
-- unchanged: 新旧で存在し、更新されていないデータ
+| DiffType | Desc | Default |
+| :--- | :--- | :--- |
+| added | 新規に追加されたデータ  | True |
+| removed | 旧データにしかなく、削除されたデータ | True |
+| updated | 新旧で存在するが、更新されたデータ | True |
+| unchanged | 新旧で存在し、更新されていないデータ | False |
 
 ## Useful Features
 

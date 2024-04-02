@@ -1,4 +1,4 @@
-import { DefaultDiffTypes, DiffTypeSelectAtom } from '@/atoms/DiffTypeSelectAtom'
+import { AllDiffTypes, DiffTypeSelectAtom } from '@/atoms/DiffTypeSelectAtom'
 import {
   Checkbox,
   FormControl,
@@ -33,7 +33,7 @@ const DiffTypeSelect = () => {
           updateDiffTypes(diffTYpes)
         }}
       >
-        {DefaultDiffTypes().map((diffType) => (
+        {AllDiffTypes().map((diffType) => (
           <MenuItem key={diffType} value={diffType}>
             <Checkbox checked={diffTypes.includes(diffType)} />
             <ListItemText primary={diffType} />
