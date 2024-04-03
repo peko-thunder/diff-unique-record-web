@@ -1,118 +1,48 @@
 import { DiffTypeSelectAtom } from '@/atoms/DiffTypeSelectAtom'
 import { RecordKeyAtom } from '@/atoms/RecordKeyAtom'
-import { DiffRecord, TextParseAtom } from '@/atoms/TextParseAtom'
-import { DiffType, diff, generateDiffText } from 'diff-unique-record'
+import { TextParseAtom } from '@/atoms/TextParseAtom'
+import { ParseResult } from '@/workers/parse.worker'
 import { useAtomValue } from 'jotai'
+import { useEffect, useState } from 'react'
 import SyntaxHighlighter from 'react-syntax-highlighter'
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 import styled from 'styled-components'
 
 /**
- * 空オプション
+ * SyntaxHighlighter で表示する行のスタイリングクラス
  */
-const EMPTY_OPTION = { rowText: '', lineProps: () => ({}) }
-
-/**
- * DiffResult 生成パラメーター
- */
-type ResultParam = {
-  diffRecord: DiffRecord
-  uniqueKeys: string[]
-  diffTypes: DiffType[]
-}
-
-/**
- * 差分結果を生成する
- * @param param
- * @returns
- */
-export const generateDiffResult = (param: ResultParam) => {
-  if (param.uniqueKeys.length === 0) return EMPTY_OPTION
-  const diffResults = diffDataList(param)
-  const diffText = generateDiffText(diffResults)
-  const parsedDiffInfo = parseDiffText(diffText)
-  const lineProps = generateLineProps(parsedDiffInfo)
-
-  return { rowText: parsedDiffInfo.rowText, lineProps }
-}
-
-/**
- * 新旧のデータをSelectデータで比較/フィルタする
- * @param param
- * @returns
- */
-const diffDataList = ({ diffRecord, uniqueKeys, diffTypes }: ResultParam) => {
-  const diffResults = diff({
-    old: diffRecord.oldData.list,
-    new: diffRecord.newData.list,
-    keys: uniqueKeys as never[],
-  }).filter((result) => diffTypes.includes(result.type))
-
-  return diffResults
-}
-
-/**
- * 差分テキストを解析した結果
- */
-type ParsedDiffInfo = { rowText: string } & DiffRowNums
-
-/**
- * 差分テキストを解析する。
- * + or -のプレフィックスを持つ行番号を配列化する。
- * 元テキストからはプレフィックスを空白文字に置換する。
- * @param diffText
- * @returns
- */
-const parseDiffText = (diffText: string): ParsedDiffInfo => {
-  const addedRowNums: number[] = []
-  const removedRowNums: number[] = []
-  const rows = diffText.split(/\n/)
-  const excludedPrefixRows = rows.map((row, i) => {
-    const rowNumer = i + 1
-    if (/^\+.*$/.test(row)) addedRowNums.push(rowNumer)
-    if (/^-.*$/.test(row)) removedRowNums.push(rowNumer)
-
-    return row.replace(/^\+/, ' ').replace(/^\-/, ' ')
-  })
-
-  return {
-    addedRowNums,
-    removedRowNums,
-    rowText: excludedPrefixRows.join('\n'),
-  }
-}
-
-/**
- * Diff 結果(+, -)の行ナンバーをまとめたデータ構造
- */
-type DiffRowNums = Record<'addedRowNums' | 'removedRowNums', number[]>
-
-/**
- * SyntaxHighlighter で使用するオプションを作成する
- * LineごとにCSSのStyleを当てる処理を作成
- * @param diffRowNums
- * @returns
- */
-const generateLineProps = ({ addedRowNums, removedRowNums }: DiffRowNums) => {
-  const lineProps = (lineNumber: number) => {
-    // なぜかclassNameを設定しても反映されないため、data属性を付与してスタイル反映
-    // classNameなどの正規のプロパティをreturnに含む必要があるためundefinedで設定
-    let lineType = 'unchanged'
-    if (addedRowNums.includes(lineNumber)) lineType = 'added'
-    if (removedRowNums.includes(lineNumber)) lineType = 'removed'
-
-    return { className: undefined, 'data-line-type': lineType }
-  }
-
-  return lineProps
-}
+type LineType = 'added' | 'removed' | 'unchanged'
 
 const DiffResult = () => {
   const diffRecord = useAtomValue(TextParseAtom.record)
   const uniqueKeys = useAtomValue(RecordKeyAtom.uniqueKeys)
   const diffTypes = useAtomValue(DiffTypeSelectAtom.select)
 
-  const { rowText, lineProps } = generateDiffResult({ diffRecord, uniqueKeys, diffTypes })
+  // 文字列解析処理はマルチスレッドで実行して結果をstateに格納する
+  const [rowText, dispatchRowText] = useState('')
+  const [addedRowNums, dispatchAddedRowNums] = useState<number[]>([])
+  const [removedRowNums, dispatchRemovedRowNums] = useState<number[]>([])
+  useEffect(() => {
+    const worker = new Worker(new URL('../workers/parse.worker', import.meta.url))
+    worker.addEventListener('message', (e: { data: ParseResult }) => {
+      const parseResult = e.data
+      dispatchRowText(parseResult.diffText)
+      dispatchAddedRowNums(parseResult.addedRowNums)
+      dispatchRemovedRowNums(parseResult.removedRowNums)
+    })
+
+    worker.postMessage({ diffRecord, uniqueKeys, diffTypes })
+  }, [diffRecord, uniqueKeys, diffTypes])
+
+  const lineProps = (lineNumber: number) => {
+    // なぜかclassNameを設定しても反映されないため、data属性を付与してスタイル反映
+    // classNameなどの正規のプロパティをreturnに含む必要があるためundefinedで設定
+    let lineType: LineType = 'unchanged'
+    if (addedRowNums.includes(lineNumber)) lineType = 'added'
+    if (removedRowNums.includes(lineNumber)) lineType = 'removed'
+
+    return { className: undefined, 'data-line-type': lineType }
+  }
 
   return (
     <StyleWrapper>
